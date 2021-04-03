@@ -1,0 +1,5 @@
+{
+  "internal": true,
+  "main": "../lib/helpers/index.js",
+  "types": "../lib/helpers/index.d.ts"
+}

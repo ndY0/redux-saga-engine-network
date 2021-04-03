@@ -13,4 +13,8 @@ interface Manager {
   ): Socket;
 }
 
-export { Manager, Socket };
+interface SocketClient {
+  createManager<T>(uri: string, options: Partial<T>): Manager;
+}
+
+export { Manager, Socket, SocketClient };

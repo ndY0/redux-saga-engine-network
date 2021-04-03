@@ -1,0 +1,5 @@
+{
+  "internal": true,
+  "main": "../lib/clients/index.js",
+  "types": "../lib/clients/index.d.ts"
+}

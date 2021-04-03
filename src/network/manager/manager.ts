@@ -90,22 +90,30 @@ export default class NetworkManager {
     });
     manager.on("error", (error) => {
       this.enginesManager.run(function* () {
-        yield call(connectionErrorSaga, error, manager);
+        yield call<
+          (...args: unknown[]) => unknown
+        >(connectionErrorSaga, error, manager);
       });
     });
     manager.on("reconnect", (attemptNumber) => {
       this.enginesManager.run(function* () {
-        yield call(reconnectSuccessSaga, attemptNumber, manager);
+        yield call<
+          (...args: unknown[]) => unknown
+        >(reconnectSuccessSaga, attemptNumber, manager);
       });
     });
     manager.on("reconnect_error", (attemptNumber) => {
       this.enginesManager.run(function* () {
-        yield call(reconnectErrorSaga, attemptNumber, manager);
+        yield call<
+          (...args: unknown[]) => unknown
+        >(reconnectErrorSaga, attemptNumber, manager);
       });
     });
     manager.on("reconnect_failed", (attemptNumber) => {
       this.enginesManager.run(function* () {
-        yield call(maxReconnectErrorSaga, attemptNumber, manager);
+        yield call<
+          (...args: unknown[]) => unknown
+        >(maxReconnectErrorSaga, attemptNumber, manager);
       });
     });
     this.managers.set(key, manager);
@@ -141,7 +149,9 @@ export default class NetworkManager {
     });
     socket.on("disconnect", (reason) => {
       this.enginesManager.run(function* () {
-        yield call(disconnectSaga, reason, socket);
+        yield call<
+          (...args: unknown[]) => unknown
+        >(disconnectSaga, reason, socket);
       });
     });
 

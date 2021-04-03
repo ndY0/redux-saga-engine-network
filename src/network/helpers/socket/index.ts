@@ -12,7 +12,7 @@ const registerSocketManager = (
     options: { ...options },
   }: {
     url: string;
-    port: string;
+    port: number;
     options: Record<string | number | symbol, unknown>;
   },
   connectionErrorSaga: (

@@ -3,10 +3,20 @@
   "version": "0.1.0",
   "description": "a network adapter for redux-saga-engine-react to seemingly integrate socket and api interraction in redux-saga way",
   "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": "https://github.com/ndY0/redux-saga-engine-network.git",
   "author": "Andy Crépin <andy1.crepin-prestataire@laposte.fr>",
-  "license": "GPL-2.0 License",
+  "license": "GPL-2.0-or-later",
   "private": false,
+  "files": [
+    "lib/**/*.js",
+    "lib/**/*.d.ts",
+    "clients",
+    "effects",
+    "helpers",
+    "manager"
+  ],
   "scripts": {
     "build": "tsc"
   },

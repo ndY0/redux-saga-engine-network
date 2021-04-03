@@ -1,0 +1,5 @@
+{
+  "internal": true,
+  "main": "../lib/effects/index.js",
+  "types": "../lib/effects/index.d.ts"
+}

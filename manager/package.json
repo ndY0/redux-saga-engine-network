@@ -1,0 +1,5 @@
+{
+  "internal": true,
+  "main": "../lib/manager/index.js",
+  "types": "../lib/manager/index.d.ts"
+}
