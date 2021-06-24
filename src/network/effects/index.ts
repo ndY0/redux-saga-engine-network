@@ -26,7 +26,7 @@ const takeEveryNetwork = (
     while (true) {
       const value = yield takeNetwork(endpoint);
       yield fork(function* (...args) {
-        yield call(sagaHandler, ...args);
+        yield call([manager, sagaHandler], ...args);
       }, value);
     }
   });
@@ -39,7 +39,7 @@ const spawnEveryNetwork = (
     while (true) {
       const value = yield takeNetwork(endpoint);
       yield fork(function* (...args) {
-        yield call(sagaHandler, ...args);
+        yield call([manager, sagaHandler], ...args);
       }, value);
     }
   });

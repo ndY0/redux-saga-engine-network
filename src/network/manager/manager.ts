@@ -1,14 +1,13 @@
 import { call, put, take, spawn, race } from "redux-saga/effects";
-import { multicastChannel } from "redux-saga";
+import { multicastChannel, SagaMiddleware } from "redux-saga";
 import { v1 } from "uuid";
-import LogicEngineManager from "redux-saga-react-engine/manager";
 import { SocketClient } from "../clients";
 import { Manager, Socket } from "../clients/types";
 
 export default class NetworkManager {
   socketClient: SocketClient;
 
-  enginesManager: LogicEngineManager;
+  sagaMiddleware: SagaMiddleware;
 
   managers = new Map<string, Manager>();
 
@@ -39,11 +38,8 @@ export default class NetworkManager {
     data: Record<string | number | symbol, unknown>;
   }>();
 
-  connect(
-    logicEngineManager: LogicEngineManager,
-    socketClient: SocketClient
-  ): void {
-    this.enginesManager = logicEngineManager;
+  connect(sagaMiddleware: SagaMiddleware, socketClient: SocketClient): void {
+    this.sagaMiddleware = sagaMiddleware;
     this.socketClient = socketClient;
     this.sockets.forEach((socket) => socket.connect());
   }
@@ -89,28 +85,28 @@ export default class NetworkManager {
       autoConnect: false,
     });
     manager.on("error", (error) => {
-      this.enginesManager.run(function* () {
+      this.sagaMiddleware.run(function* () {
         yield call<
           (...args: unknown[]) => unknown
         >(connectionErrorSaga, error, manager);
       });
     });
     manager.on("reconnect", (attemptNumber) => {
-      this.enginesManager.run(function* () {
+      this.sagaMiddleware.run(function* () {
         yield call<
           (...args: unknown[]) => unknown
         >(reconnectSuccessSaga, attemptNumber, manager);
       });
     });
     manager.on("reconnect_error", (attemptNumber) => {
-      this.enginesManager.run(function* () {
+      this.sagaMiddleware.run(function* () {
         yield call<
           (...args: unknown[]) => unknown
         >(reconnectErrorSaga, attemptNumber, manager);
       });
     });
     manager.on("reconnect_failed", (attemptNumber) => {
-      this.enginesManager.run(function* () {
+      this.sagaMiddleware.run(function* () {
         yield call<
           (...args: unknown[]) => unknown
         >(maxReconnectErrorSaga, attemptNumber, manager);
@@ -143,12 +139,12 @@ export default class NetworkManager {
     const socket = manager.socket(namespace, { ...authOptions });
 
     socket.on("connect", () => {
-      this.enginesManager.run(function* () {
+      this.sagaMiddleware.run(function* () {
         yield call(connectSaga, socket);
       });
     });
     socket.on("disconnect", (reason) => {
-      this.enginesManager.run(function* () {
+      this.sagaMiddleware.run(function* () {
         yield call<
           (...args: unknown[]) => unknown
         >(disconnectSaga, reason, socket);
@@ -168,7 +164,7 @@ export default class NetworkManager {
               map.delete(key);
             }
           });
-          this.enginesManager.run(
+          this.sagaMiddleware.run(
             handler.handler,
             socketKey,
             subscriptionToNotify.map((sub) => sub.identifier),
