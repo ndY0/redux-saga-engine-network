@@ -79,7 +79,7 @@ const registerSocketEndpoint = (
   endpointName: string,
   socketKey: string,
   emitEventName: string,
-  selector: (event: string, ...args: unknown[]) => boolean = () => true
+  selector: (event: string, ...args: any) => boolean = () => true
 ): void =>
   networkManager.registerSocketEndpoint(
     endpointName,

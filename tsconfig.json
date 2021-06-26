@@ -5,8 +5,7 @@
     "module": "CommonJS",
     "declaration": true,
     "outDir": "./lib",
-    "types": [],
-    "jsx": "react",
+    "types": ["jest", "node"],
     "esModuleInterop": true
   },
   "include": ["src"],
