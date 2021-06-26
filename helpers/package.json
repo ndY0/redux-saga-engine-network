@@ -1,5 +1,5 @@
 {
-  "internal": true,
+  "name": "redux-saga-engine-network/helpers",
   "main": "../lib/helpers/index.js",
   "types": "../lib/helpers/index.d.ts"
 }
