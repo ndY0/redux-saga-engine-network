@@ -25,11 +25,13 @@
   "devDependencies": {
     "@types/jest": "^26.0.23",
     "@types/redux-saga": "^0.10.5",
+    "@types/reflect-metadata": "^0.1.0",
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.20.0",
     "eslint": "^7.23.0",
     "jest": "^27.0.5",
+    "reflect-metadata": "^0.1.13",
     "ts-jest": "^27.0.3",
     "ts-node": "^10.0.0",
     "typescript": "^4.2.3"

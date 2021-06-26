@@ -5,15 +5,15 @@ import { SocketClient } from "../clients";
 import { Manager, Socket } from "../clients/types";
 
 export default class NetworkManager {
-  socketClient: SocketClient;
+  private socketClient: SocketClient;
 
-  sagaMiddleware: SagaMiddleware;
+  private sagaMiddleware: SagaMiddleware;
 
-  managers = new Map<string, Manager>();
+  private managers = new Map<string, Manager>();
 
-  sockets = new Map<string, Socket>();
+  private sockets = new Map<string, Socket>();
 
-  handlers = new Map<
+  private handlers = new Map<
     string,
     {
       type: "socket" | "http";
@@ -30,18 +30,21 @@ export default class NetworkManager {
     }
   >();
 
-  subscriptions = new Map();
+  private subscriptions = new Map();
 
-  networkChannel = multicastChannel<{
-    type: string;
-    identifiers: string[];
-    data: Record<string | number | symbol, unknown>;
-  }>();
+  private networkChannel =
+    multicastChannel<{
+      type: string;
+      identifiers: string[];
+      data: any;
+    }>();
 
   connect(sagaMiddleware: SagaMiddleware, socketClient: SocketClient): void {
     this.sagaMiddleware = sagaMiddleware;
     this.socketClient = socketClient;
-    this.sockets.forEach((socket) => socket.connect());
+    this.sockets.forEach(
+      /* istanbul ignore next */ (socket) => socket.connect()
+    );
   }
 
   registerSocketManager(
@@ -55,30 +58,19 @@ export default class NetworkManager {
       port: number;
       options: Record<string | number | symbol, unknown>;
     },
-    connectionErrorSaga: (
-      error: Error,
-      manager: NetworkManager
-    ) => Generator = function* () {
-      yield null;
-    },
+    connectionErrorSaga: (error: Error, manager: NetworkManager) => Generator,
     reconnectSuccessSaga: (
       attemptNumber: number,
       manager: NetworkManager
-    ) => Generator = function* () {
-      yield null;
-    },
+    ) => Generator,
     reconnectErrorSaga: (
       attemptNumber: number,
       manager: NetworkManager
-    ) => Generator = function* () {
-      yield null;
-    },
+    ) => Generator,
     maxReconnectErrorSaga: (
       attemptNumber: number,
       manager: NetworkManager
-    ) => Generator = function* () {
-      yield null;
-    }
+    ) => Generator
   ): void {
     const manager = this.socketClient.createManager(`${url}:${port}`, {
       ...options,
@@ -121,16 +113,9 @@ export default class NetworkManager {
     namespace: string,
     {
       auth: { ...authOptions },
-    }: { auth: Record<string | number | symbol, unknown> } = { auth: {} },
-    connectSaga: (socket: Socket) => Generator = function* () {
-      yield null;
-    },
-    disconnectSaga: (
-      reason: string,
-      manager: NetworkManager
-    ) => Generator = function* () {
-      yield null;
-    }
+    }: { auth: Record<string | number | symbol, unknown> },
+    connectSaga: (socket: Socket) => Generator,
+    disconnectSaga: (reason: string, manager: NetworkManager) => Generator
   ): void {
     const manager = this.managers.get(managerKey);
     if (!manager) {
@@ -182,7 +167,7 @@ export default class NetworkManager {
     endpointName: string,
     socketKey: string,
     emitEventName: string,
-    selector: (event: string, ...args: unknown[]) => boolean = () => true
+    selector: (event: string, ...args: any) => boolean
   ): void {
     const socket = this.sockets.get(socketKey);
     if (!socket) {
@@ -206,7 +191,7 @@ export default class NetworkManager {
           yield put(localRef, {
             type: endpointName,
             identifiers,
-            data: { ...args },
+            data: args,
           });
         }
       },
