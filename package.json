@@ -1,6 +1,6 @@
 {
   "name": "redux-saga-engine-network",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "a network adapter for redux-saga to seemingly integrate socket and api interraction in redux-saga way",
   "main": "lib/index.js",
   "module": "lib/index.js",
@@ -10,12 +10,10 @@
   "license": "GPL-2.0-or-later",
   "private": false,
   "files": [
-    "lib/**/*.js",
-    "lib/**/*.d.ts",
+    "lib",
     "clients",
     "effects",
-    "helpers",
-    "manager"
+    "helpers"
   ],
   "scripts": {
     "test": "jest",
