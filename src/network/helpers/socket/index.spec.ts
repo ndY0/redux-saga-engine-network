@@ -91,13 +91,17 @@ describe("socket helpers", () => {
     function selector() {
       return true;
     }
-    registerSocketEndpoint("test", "test", "test", selector);
+    function errorSelector() {
+      return true;
+    }
+    registerSocketEndpoint("test", "test", "test", selector, errorSelector);
     expect(registerSocketEndpointSpy).toHaveBeenCalledTimes(1);
     expect(registerSocketEndpointSpy).toHaveBeenCalledWith(
       "test",
       "test",
       "test",
-      selector
+      selector,
+      errorSelector
     );
   });
 });
