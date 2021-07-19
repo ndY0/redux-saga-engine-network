@@ -294,7 +294,9 @@ describe("NetworkManager", () => {
       "test",
       "test",
       (event: string, data: { type: string }) =>
-        event === "reply" && data.type === "test"
+        event === "reply" && data.type === "test",
+        (event: string, data: { type: string }) =>
+        event === "error:message" && data.type === "test"
     );
 
     const socketEndpoint = Reflect.get(networkManager, "handlers").get("test");
@@ -341,7 +343,9 @@ describe("NetworkManager", () => {
         "test",
         "test",
         (event: string, data: { type: string }) =>
-          event === "reply" && data.type === "test"
+          event === "reply" && data.type === "test",
+          (event: string, data: { type: string }) =>
+          event === "error:message" && data.type === "test"
       )
     ).toThrowError(new Error("no socket registered at key test"));
   });
@@ -397,7 +401,9 @@ describe("NetworkManager", () => {
       "test",
       "test",
       (event: string, data: { type: string }) =>
-        event === "reply" && data.type === "test"
+        event === "reply" && data.type === "test",
+        (event: string, data: { type: string }) =>
+        event === "error:message" && data.type === "test"
     );
     expect(() =>
       networkManager.registerSocketEndpoint(
@@ -405,7 +411,9 @@ describe("NetworkManager", () => {
         "test",
         "test",
         (event: string, data: { type: string }) =>
-          event === "reply" && data.type === "test"
+          event === "reply" && data.type === "test",
+          (event: string, data: { type: string }) =>
+          event === "error:message" && data.type === "test"
       )
     ).toThrowError(new Error("test endpoint already registered"));
   });
@@ -498,7 +506,9 @@ describe("NetworkManager", () => {
       "test",
       "test",
       (event: string, data: { type: string }) =>
-        event === "reply" && data.type === "test"
+        event === "reply" && data.type === "test",
+        (event: string, data: { type: string }) =>
+        event === "error:message" && data.type === "test"
     );
 
     const identifier = v1();

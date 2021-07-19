@@ -167,7 +167,8 @@ export default class NetworkManager {
     endpointName: string,
     socketKey: string,
     emitEventName: string,
-    selector: (event: string, ...args: any) => boolean
+    selector: (event: string, ...args: any) => boolean,
+    errorSelector: (event: string, ...args: any) => boolean,
   ): void {
     const socket = this.sockets.get(socketKey);
     if (!socket) {
@@ -190,6 +191,13 @@ export default class NetworkManager {
         if (eventSocketKey === socketKey && selector(event, ...args)) {
           yield put(localRef, {
             type: endpointName,
+            identifiers,
+            data: args,
+          });
+        }
+        if (eventSocketKey === socketKey && errorSelector(event, ...args)) {
+          yield put(localRef, {
+            type: `${endpointName}_error`,
             identifiers,
             data: args,
           });

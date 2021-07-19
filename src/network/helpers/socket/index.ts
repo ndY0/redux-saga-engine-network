@@ -79,13 +79,15 @@ const registerSocketEndpoint = (
   endpointName: string,
   socketKey: string,
   emitEventName: string,
-  selector: (event: string, ...args: any) => boolean = () => true
+  responseSelector: (event: string, ...args: any) => boolean = () => true,
+  errorSelector: (event: string, ...args: any) => boolean = () => true
 ): void =>
   networkManager.registerSocketEndpoint(
     endpointName,
     socketKey,
     emitEventName,
-    selector
+    responseSelector,
+    errorSelector
   );
 
 export { registerSocketManager, registerSocket, registerSocketEndpoint };

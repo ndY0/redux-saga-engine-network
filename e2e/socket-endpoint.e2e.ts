@@ -45,6 +45,9 @@ describe("socket endpoint", () => {
       "emitEvent",
       (event: string) => {
         return event === "emitEvent";
+      },
+      (event: string) => {
+        return event === "error";
       }
     );
     registerSocketEndpoint(
@@ -53,6 +56,20 @@ describe("socket endpoint", () => {
       "emitEvent2",
       (event: string) => {
         return event === "emitEvent2";
+      },
+      (event: string) => {
+        return event === "error";
+      }
+    );
+    registerSocketEndpoint(
+      "testSocketError",
+      "test",
+      "error",
+      (event: string) => {
+        return event === "emitEvent2";
+      },
+      (event: string) => {
+        return event === "error";
       }
     );
     registerApiEndpoint("test", function () {
@@ -75,6 +92,35 @@ describe("socket endpoint", () => {
     sagaMiddleware.run(function* () {
       //shouldnt trigger any take since none is registered
       yield putNetwork(["testSocket2", passedIdentifier], "test", {
+        test: "test",
+      });
+      const identifier = yield putNetwork(
+        ["testSocket", passedIdentifier],
+        "test",
+        {
+          test: "test",
+        }
+      );
+      const subscriptions = Reflect.get(manager, "subscriptions");
+      expect(subscriptions.size).toEqual(0);
+      expect(identifier).toEqual(passedIdentifier);
+    });
+  });
+  it("should allow take to receive the error returned by a put for a socket endpoint", (done) => {
+    const passedIdentifier = v1();
+    sagaMiddleware.run(function* () {
+      try {
+        yield takeNetwork("testSocketError", passedIdentifier)
+      } catch(data) {
+        expect(data).toEqual([
+          "test", { test: "test" }
+        ]);
+      }
+      done();
+    });
+    sagaMiddleware.run(function* () {
+      //shouldnt trigger any take since none is registered
+      yield putNetwork(["testSocketError", passedIdentifier], "test", {
         test: "test",
       });
       const identifier = yield putNetwork(
