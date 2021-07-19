@@ -10,12 +10,10 @@
   "license": "GPL-2.0-or-later",
   "private": false,
   "files": [
-    "lib/**/*.js",
-    "lib/**/*.d.ts",
+    "lib",
     "clients",
     "effects",
-    "helpers",
-    "manager"
+    "helpers"
   ],
   "scripts": {
     "test": "jest",

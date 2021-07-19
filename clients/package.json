@@ -1,5 +1,5 @@
 {
-  "internal": true,
+  "name": "redux-saga-engine-network/clients",
   "main": "../lib/clients/index.js",
   "types": "../lib/clients/index.d.ts"
 }

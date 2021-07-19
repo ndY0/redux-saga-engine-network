@@ -1,5 +1,5 @@
 {
-  "internal": true,
+  "name": "redux-saga-engine-network/effects",
   "main": "../lib/effects/index.js",
   "types": "../lib/effects/index.d.ts"
 }
