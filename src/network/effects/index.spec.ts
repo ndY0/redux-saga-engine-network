@@ -42,10 +42,13 @@ describe("effects", () => {
     );
   });
   it("should fork a while loop, that first take from network, then fork to the handler", () => {
-    function* testHandler() {
+    function* testSuccessHandler() {
       yield true;
     }
-    const test = takeEveryNetwork("test", testHandler);
+    function* testErrorHandler() {
+      yield true;
+    }
+    const test = takeEveryNetwork("test", testSuccessHandler, testErrorHandler);
     expect(test.type).toEqual("FORK");
     const everyInnerGenerator = test.payload.fn();
     const takeEffect = everyInnerGenerator.next().value;
@@ -62,16 +65,23 @@ describe("effects", () => {
     const callEffect = innerForkGenerator.next().value;
 
     expect(callEffect.type).toEqual("CALL");
-    expect(callEffect.payload.fn.name).toEqual("testHandler");
+    expect(callEffect.payload.fn.name).toEqual("testSuccessHandler");
     expect(callEffect.payload.context.constructor.name).toEqual(
       "NetworkManager"
     );
   });
   it("should spawn a while loop, that first take from network, then fork to the handler", () => {
-    function* testHandler() {
+    function* testSuccessHandler() {
       yield true;
     }
-    const test = spawnEveryNetwork("test", testHandler);
+    function* testErrorHandler() {
+      yield true;
+    }
+    const test = spawnEveryNetwork(
+      "test",
+      testSuccessHandler,
+      testErrorHandler
+    );
     expect(test.type).toEqual("FORK");
     const everyInnerGenerator = test.payload.fn();
     const takeEffect = everyInnerGenerator.next().value;
@@ -88,7 +98,7 @@ describe("effects", () => {
     const callEffect = innerForkGenerator.next().value;
 
     expect(callEffect.type).toEqual("CALL");
-    expect(callEffect.payload.fn.name).toEqual("testHandler");
+    expect(callEffect.payload.fn.name).toEqual("testSuccessHandler");
     expect(callEffect.payload.context.constructor.name).toEqual(
       "NetworkManager"
     );

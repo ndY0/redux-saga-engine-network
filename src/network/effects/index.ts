@@ -9,6 +9,7 @@ import {
 } from "redux-saga/effects";
 import manager from "../manager";
 import { v1 } from "uuid";
+import { Task } from "redux-saga";
 
 const putNetwork = (
   [endpoint, identifier = v1()]: [string, string?],
@@ -20,27 +21,45 @@ const takeNetwork = (endpoint: string, identifier?: string): CallEffect =>
 
 const takeEveryNetwork = (
   endpoint: string,
-  sagaHandler: (...args: unknown[]) => Generator
+  sagaSuccessHandler: (...args: unknown[]) => Generator,
+  sagaErrorHandler: (...args: unknown[]) => Generator = function* () {
+    yield undefined;
+  }
 ): ForkEffect =>
   fork(function* every() {
     while (true) {
-      const value = yield takeNetwork(endpoint);
-      yield fork(function* (...args) {
-        yield call([manager, sagaHandler], ...args);
-      }, value);
+      try {
+        const value = yield takeNetwork(endpoint);
+        yield fork(function* (...args) {
+          yield call([manager, sagaSuccessHandler], ...args);
+        }, value);
+      } catch (e) {
+        yield fork(function* (...args) {
+          yield call([manager, sagaErrorHandler], ...args);
+        }, e);
+      }
     }
   });
 
 const spawnEveryNetwork = (
   endpoint: string,
-  sagaHandler: (...args: unknown[]) => Generator
+  sagaSuccessHandler: (...args: unknown[]) => Generator,
+  sagaErrorHandler: (...args: unknown[]) => Generator = function* () {
+    yield undefined;
+  }
 ): ForkEffect =>
   spawn(function* every() {
     while (true) {
-      const value = yield takeNetwork(endpoint);
-      yield fork(function* (...args) {
-        yield call([manager, sagaHandler], ...args);
-      }, value);
+      try {
+        const value = yield takeNetwork(endpoint);
+        yield fork(function* (...args) {
+          yield call([manager, sagaSuccessHandler], ...args);
+        }, value);
+      } catch (e) {
+        yield fork(function* (...args) {
+          yield call([manager, sagaErrorHandler], ...args);
+        }, e);
+      }
     }
   });
 
