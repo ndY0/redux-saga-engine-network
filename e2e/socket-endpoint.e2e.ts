@@ -18,7 +18,7 @@ import {
   spawnEveryNetwork,
 } from "../src/network/effects";
 import { registerApiEndpoint } from "../src/network/helpers/http";
-import { all, delay, race } from "@redux-saga/core/effects";
+import { all } from "redux-saga/effects";
 
 describe("socket endpoint", () => {
   let store: Store;
@@ -110,11 +110,9 @@ describe("socket endpoint", () => {
     const passedIdentifier = v1();
     sagaMiddleware.run(function* () {
       try {
-        yield takeNetwork("testSocketError", passedIdentifier)
-      } catch(data) {
-        expect(data).toEqual([
-          "test", { test: "test" }
-        ]);
+        yield takeNetwork("testSocketError", passedIdentifier);
+      } catch (data) {
+        expect(data).toEqual(["test", { test: "test" }]);
       }
       done();
     });
@@ -165,6 +163,26 @@ describe("socket endpoint", () => {
       yield putNetwork(["testSocket"], "test", { test: "test" });
     });
   });
+  it("should allow to take every error of a socket endpoint ", (done) => {
+    sagaMiddleware.run(function* () {
+      yield takeEveryNetwork(
+        "testSocketError",
+        function* () {
+          yield undefined;
+        },
+        function* (args) {
+          expect(args).toEqual(["test", { test: "test" }]);
+          console.log("reached end condition");
+          const subscriptions = Reflect.get(manager, "subscriptions");
+          expect(subscriptions.size).toEqual(0);
+          done();
+        }
+      );
+    });
+    sagaMiddleware.run(function* () {
+      yield putNetwork(["testSocketError"], "test", { test: "test" });
+    });
+  });
   it("should allow to spawn every result of a socket endpoint ", (done) => {
     let counter = 0;
     sagaMiddleware.run(function* () {
@@ -182,6 +200,25 @@ describe("socket endpoint", () => {
       yield putNetwork(["testSocket"], "test", { test: "test" });
       yield putNetwork(["testSocket"], "test", { test: "test" });
       yield putNetwork(["testSocket"], "test", { test: "test" });
+    });
+  });
+  it("should allow to spawn every error of a socket endpoint ", (done) => {
+    sagaMiddleware.run(function* () {
+      yield spawnEveryNetwork(
+        "testSocketError",
+        function* () {
+          yield undefined;
+        },
+        function* (args) {
+          expect(args).toEqual(["test", { test: "test" }]);
+          const subscriptions = Reflect.get(manager, "subscriptions");
+          expect(subscriptions.size).toEqual(0);
+          done();
+        }
+      );
+    });
+    sagaMiddleware.run(function* () {
+      yield putNetwork(["testSocketError"], "test", { test: "test" });
     });
   });
 });

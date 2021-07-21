@@ -107,6 +107,12 @@ registerSocketEndpoint(
     args: [{ type: string; data: any }]
   ) {
     return event === "reply" && args[0].type === "post_todo_list";
+  },
+  function selectErrorForPostTodoList(
+    event: string,
+    args: [{ type: string; data: any }]
+  ) {
+    return event === "error:message" && args[0].type === "post_todo_list";
   }
 );
 ```
@@ -117,7 +123,8 @@ then, you declare a socket, providing it a key, the manager key,
 the socket io namespace to connect to, passing it optional sagaHandlers to react to client connection events.
 
 finally, you declare a socket endpoint, providing it a key, the socket key,
-the event name to emit, and a selector function, which will filter server response and route them to consumer if intended for this endpoint.
+the event name to emit, a selector function, which will filter server response and route them to consumer if intended for this endpoint,
+and a error selector function, wich wil filter error response from the server in a likewise manner.
 
 ### endpoint usage
 
@@ -150,12 +157,20 @@ function* handleResultPostTodoList2() {
 export function* watcherResults() {
   yield all([
     function* () {
-      const data = yield takeNetwork(["postTodoList"]);
-      yield call(handleResultPostTodoList1, data);
+      try {
+        const data = yield takeNetwork(["postTodoList"]);
+        yield call(handleResultPostTodoList1, data);
+      } catch (e) {
+        // handle error
+      }
     },
     function* () {
-      const data = yield takeNetwork(["postTodoList"]);
-      yield call(handleResultPostTodoList2, data);
+      try {
+        const data = yield takeNetwork(["postTodoList"]);
+        yield call(handleResultPostTodoList2, data);
+      } catch (e) {
+        // handle error
+      }
     },
   ]);
 }
@@ -173,7 +188,11 @@ import { POST_TODO_LIST } from "../actions";
 import { callNetwork } from "redux-saga-engine-network/effects";
 
 function* handlePostTodoList({ data }) {
-  const result = yield callNetwork("postTodoList", { data: [] });
+  try {
+    const result = yield callNetwork("postTodoList", { data: [] });
+  } catch (e) {
+    // handle errors from network or error message if socket
+  }
 }
 
 export function* watcher() {
@@ -194,8 +213,16 @@ function* handlePostTodoList({ data }) {
   // do something on every response
 }
 
+function* handleErrorsPostTodoList(err) {
+  // do something on error response from the server
+}
+
 export function* watcher() {
-  yield takeEveryNetwork("postTodoList", handlePostTodoList);
+  yield takeEveryNetwork(
+    "postTodoList",
+    handlePostTodoList,
+    handleErrorsPostTodoList
+  );
   yield putNetwork(["postTodoList"], { data: [] });
   yield putNetwork(["postTodoList"], { data: [] });
   yield putNetwork(["postTodoList"], { data: [] });
