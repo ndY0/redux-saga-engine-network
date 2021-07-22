@@ -1,6 +1,6 @@
 {
   "name": "redux-saga-engine-network",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "a network adapter for redux-saga to seemingly integrate socket and api interraction in redux-saga way",
   "main": "lib/index.js",
   "module": "lib/index.js",
