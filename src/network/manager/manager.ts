@@ -32,12 +32,11 @@ export default class NetworkManager {
 
   private subscriptions = new Map();
 
-  private networkChannel =
-    multicastChannel<{
-      type: string;
-      identifiers: string[];
-      data: any;
-    }>();
+  private networkChannel = multicastChannel<{
+    type: string;
+    identifiers: string[];
+    data: any;
+  }>();
 
   connect(sagaMiddleware: SagaMiddleware, socketClient: SocketClient): void {
     this.sagaMiddleware = sagaMiddleware;
@@ -74,7 +73,7 @@ export default class NetworkManager {
   ): void {
     const manager = this.socketClient.createManager(`${url}:${port}`, {
       ...options,
-      autoConnect: false,
+      autoConnect: true,
     });
     manager.on("error", (error) => {
       this.sagaMiddleware.run(function* () {
@@ -168,7 +167,7 @@ export default class NetworkManager {
     socketKey: string,
     emitEventName: string,
     selector: (event: string, ...args: any) => boolean,
-    errorSelector: (event: string, ...args: any) => boolean,
+    errorSelector: (event: string, ...args: any) => boolean
   ): void {
     const socket = this.sockets.get(socketKey);
     if (!socket) {
