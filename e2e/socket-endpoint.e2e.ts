@@ -1,6 +1,6 @@
 import { Store, createStore, combineReducers, applyMiddleware } from "redux";
 import createSagaMiddleware, { SagaMiddleware } from "redux-saga";
-import { v1 } from "uuid";
+import UUID from "pure-uuid";
 import manager from "../src/network/manager";
 import { SocketClientMock } from "../mock/socket-client.mock";
 import { SocketClient } from "../src/network/clients/types";
@@ -77,7 +77,7 @@ describe("socket endpoint", () => {
     });
   });
   it("should allow take to receive the result returned by a put for a socket endpoint, on multiple points", (done) => {
-    const passedIdentifier = v1();
+    const passedIdentifier = (new UUID(4)).toString();
     sagaMiddleware.run(function* () {
       const result = yield all([
         takeNetwork("testSocket", passedIdentifier),
@@ -107,7 +107,7 @@ describe("socket endpoint", () => {
     });
   });
   it("should allow take to receive the error returned by a put for a socket endpoint", (done) => {
-    const passedIdentifier = v1();
+    const passedIdentifier = (new UUID(4)).toString();
     sagaMiddleware.run(function* () {
       try {
         yield takeNetwork("testSocketError", passedIdentifier);

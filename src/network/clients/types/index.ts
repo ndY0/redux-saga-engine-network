@@ -3,6 +3,7 @@ interface Socket {
   onAny(handler: (event: string, ...args: unknown[]) => void): void;
   emit(event: string, ...args: unknown[]): void;
   connect(): void;
+  disconnect(): void;
 }
 
 interface Manager {

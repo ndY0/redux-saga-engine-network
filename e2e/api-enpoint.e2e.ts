@@ -1,6 +1,6 @@
 import { Store, createStore, combineReducers, applyMiddleware } from "redux";
 import createSagaMiddleware, { SagaMiddleware } from "redux-saga";
-import { v1 } from "uuid";
+import UUID from "pure-uuid";
 import { SocketClientMock } from "../mock/socket-client.mock";
 import { SocketClient } from "../src/network/clients/types";
 import { registerApiEndpoint } from "../src/network/helpers/http";
@@ -30,13 +30,13 @@ describe("api endpoint", () => {
     sagaMiddleware = createSagaMiddleware();
     connect(sagaMiddleware, socketClient);
     store = createStore(
-      combineReducers({ test: (state) => ({ ...state }) }),
+      combineReducers({ test: (...state: any[]) => ({ ...state }) }),
       {},
       applyMiddleware(sagaMiddleware)
     );
   });
   it("should allow take to receive the result returned by a put for an api endpoint", (done) => {
-    const passedIdentifier = v1();
+    const passedIdentifier = (new UUID(4)).toString();
     sagaMiddleware.run(function* () {
       const result = yield takeNetwork("test", passedIdentifier);
       expect(result).toEqual(["test", { test: "test" }]);
@@ -93,7 +93,7 @@ describe("api endpoint", () => {
     });
   });
   it("should throw an error on take if an error occur during network call", (done) => {
-    const passedIdentifier = v1();
+    const passedIdentifier = (new UUID(4)).toString();
     sagaMiddleware.run(function* () {
       try {
         yield takeNetwork("testError", passedIdentifier);

@@ -1,6 +1,6 @@
 import { call, put, take, spawn, race } from "redux-saga/effects";
 import { multicastChannel, SagaMiddleware } from "redux-saga";
-import { v1 } from "uuid";
+import UUID from "pure-uuid";
 import { SocketClient } from "../clients";
 import { Manager, Socket } from "../clients/types";
 
@@ -44,6 +44,17 @@ export default class NetworkManager {
     this.sockets.forEach(
       /* istanbul ignore next */ (socket) => socket.connect()
     );
+  }
+
+  disconnect(): void {
+    this.sockets.forEach((socket) => socket.disconnect());
+  }
+  flushConfig(): void {
+    this.disconnect();
+    this.handlers = new Map();
+    this.subscriptions = new Map();
+    this.sockets = new Map();
+    this.managers = new Map();
   }
 
   registerSocketManager(
@@ -246,7 +257,7 @@ export default class NetworkManager {
     const handler = this.handlers.get(endpoint);
     if (handler.type === "socket") {
       const socket = this.sockets.get(handler.socketKey);
-      this.subscriptions.set(v1(), {
+      this.subscriptions.set((new UUID(4)).toString(), {
         eventSocketKey: handler.socketKey,
         event: handler.event,
         identifier,

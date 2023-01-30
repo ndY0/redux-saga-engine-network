@@ -8,11 +8,11 @@ import {
   ForkEffect,
 } from "redux-saga/effects";
 import manager from "../manager";
-import { v1 } from "uuid";
+import UUID from "pure-uuid";
 import { Task } from "redux-saga";
 
 const putNetwork = (
-  [endpoint, identifier = v1()]: [string, string?],
+  [endpoint, identifier = (new UUID(4)).toString()]: [string, string?],
   ...args: unknown[]
 ): CallEffect => call([manager, manager.put], [endpoint, identifier], ...args);
 
@@ -66,7 +66,7 @@ const spawnEveryNetwork = (
 const callNetwork = (endpoint: string, ...args: unknown[]): CallEffect =>
   call(
     function* (endpointz, ...argz) {
-      const identifier = v1();
+      const identifier = (new UUID(4)).toString();
       const [result] = yield all([
         takeNetwork(endpointz, identifier),
         putNetwork([endpointz, identifier], ...argz),

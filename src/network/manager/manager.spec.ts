@@ -3,7 +3,7 @@ import createSagaMiddleware from "redux-saga";
 import NetworkManager from "./manager";
 import { SocketClientMock } from "../../../mock/socket-client.mock";
 import { SocketManagerMock } from "../../../mock/socket-manager.mock";
-import { v1 } from "uuid";
+import UUID from "pure-uuid";
 
 describe("NetworkManager", () => {
   it("should instanciate with its registers for divers managers, subscriptions and handlers", () => {
@@ -69,7 +69,7 @@ describe("NetworkManager", () => {
     expect(socketClient.createManager).toHaveBeenCalledTimes(1);
     expect(socketClient.createManager).toHaveBeenCalledWith(
       "http://localhost:8080",
-      { autoConnect: false }
+      { autoConnect: true }
     );
     const manager = Reflect.get(networkManager, "managers").get("test");
     expect(manager).toBeDefined();
@@ -443,7 +443,7 @@ describe("NetworkManager", () => {
       return undefined;
     }
     networkManager.registerApiEndpoint("test", apiEndpointFunc);
-    const identifier = v1();
+    const identifier = (new UUID(4)).toString();
     const putFactory = networkManager.put(["test", identifier], {
       test: "test",
     });
@@ -511,7 +511,7 @@ describe("NetworkManager", () => {
         event === "error:message" && data.type === "test"
     );
 
-    const identifier = v1();
+    const identifier = (new UUID(4)).toString();
     const putFactory = networkManager.put(["test", identifier], {
       test: "test",
     });
@@ -528,7 +528,7 @@ describe("NetworkManager", () => {
     const sagaMiddleware = createSagaMiddleware();
     const socketClientMock = new SocketClientMock();
     networkManager.connect(sagaMiddleware, socketClientMock);
-    const identifier = v1();
+    const identifier = (new UUID(4)).toString();
     const putFactory = networkManager.put(["test", identifier], {
       test: "test",
     });
@@ -542,7 +542,7 @@ describe("NetworkManager", () => {
       return undefined;
     }
     networkManager.registerApiEndpoint("test", apiEndpointFunc);
-    const identifier = v1();
+    const identifier = (new UUID(4)).toString();
     const takeEffect = networkManager.take("test", identifier);
     const raceEffect = takeEffect.next().value;
     expect(raceEffect.type).toEqual("RACE");
@@ -559,7 +559,7 @@ describe("NetworkManager", () => {
   });
   it("should throw an error if endpoint doesnt exists", () => {
     const networkManager = new NetworkManager();
-    const identifier = v1();
+    const identifier = (new UUID(4)).toString();
     const takeEffect = networkManager.take("test", identifier);
     expect(() => takeEffect.next()).toThrowError(
       new Error("no endpoint registered at key test")

@@ -13,6 +13,7 @@ class SocketMock extends EventEmitter implements Socket {
     return super.emit(event, ...data);
   });
   connect = jest.fn();
+  disconnect = jest.fn();
 }
 
 export { SocketMock };

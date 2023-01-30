@@ -9,4 +9,12 @@ const connect = (
   manager.connect(sagaMiddleware, socketClient);
 };
 
-export { connect };
+const disconnect = (): void => {
+  manager.disconnect();
+};
+
+const flushConfig = (): void => {
+  manager.flushConfig();
+};
+
+export { connect, disconnect, flushConfig };
